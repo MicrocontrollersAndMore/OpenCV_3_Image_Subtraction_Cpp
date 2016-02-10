@@ -1,4 +1,4 @@
-// ImageSubtractionCpp.sln
+// Image_Subtraction_Cpp.sln
 // main.cpp
 
 #include<opencv2/core/core.hpp>
