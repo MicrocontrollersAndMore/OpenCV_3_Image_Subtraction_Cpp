@@ -1,4 +1,3 @@
-// Image_Subtraction_Cpp.sln
 // Blob.h
 
 #ifndef MY_BLOB

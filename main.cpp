@@ -1,4 +1,4 @@
-// Image_Subtraction_Cpp.sln
+// ImageSubtractionCpp.sln
 // main.cpp
 
 #include<opencv2/core/core.hpp>
@@ -71,8 +71,9 @@ int main(void) {
         cv::Mat structuringElement7x7 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
         cv::Mat structuringElement9x9 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9, 9));
 
-        cv::dilate(imgThresh, imgThresh, structuringElement7x7);
-        cv::erode(imgThresh, imgThresh, structuringElement3x3);
+        cv::dilate(imgThresh, imgThresh, structuringElement5x5);
+        cv::dilate(imgThresh, imgThresh, structuringElement5x5);
+        cv::erode(imgThresh, imgThresh, structuringElement5x5);
 
         cv::Mat imgThreshCopy = imgThresh.clone();
 
@@ -80,8 +81,20 @@ int main(void) {
 
         cv::findContours(imgThreshCopy, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-        for (auto &contour : contours) {
-            Blob possibleBlob(contour);
+        cv::Mat imgContours(imgThresh.size(), CV_8UC3, SCALAR_BLACK);
+
+        cv::drawContours(imgContours, contours, -1, SCALAR_WHITE, -1);
+
+        cv::imshow("imgContours", imgContours);
+
+        std::vector<std::vector<cv::Point> > convexHulls(contours.size());
+
+        for (unsigned int i = 0; i < contours.size(); i++) {
+            cv::convexHull(contours[i], convexHulls[i]);
+        }
+
+        for (auto &convexHull : convexHulls) {
+            Blob possibleBlob(convexHull);
 
             if (possibleBlob.boundingRect.area() > 100 &&
                 possibleBlob.dblAspectRatio >= 0.2 &&
@@ -93,16 +106,17 @@ int main(void) {
             }
         }
 
-        cv::Mat imgContours(imgThresh.size(), CV_8UC3, SCALAR_BLACK);
-        contours.clear();
+        cv::Mat imgConvexHulls(imgThresh.size(), CV_8UC3, SCALAR_BLACK);
 
+        convexHulls.clear();
+        
         for (auto &blob : blobs) {
-            contours.push_back(blob.contour);
+            convexHulls.push_back(blob.contour);
         }
 
-        cv::drawContours(imgContours, contours, -1, SCALAR_WHITE, -1);
+        cv::drawContours(imgConvexHulls, convexHulls, -1, SCALAR_WHITE, -1);
 
-        cv::imshow("imgContours", imgContours);
+        cv::imshow("imgConvexHulls", imgConvexHulls);
 
         imgFrame2Copy = imgFrame2.clone();          // get another copy of frame 2 since we changed the previous frame 2 copy in the processing above
 

@@ -1,4 +1,3 @@
-// Image_Subtraction_Cpp.sln
 // Blob.cpp
 
 #include "Blob.h"
