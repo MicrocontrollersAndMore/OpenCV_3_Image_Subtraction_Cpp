@@ -6,7 +6,9 @@
 #include<opencv2/imgproc/imgproc.hpp>
 
 #include<iostream>
+#ifdef WINDOWS
 #include<conio.h>           // it may be necessary to change or remove this line if not using Windows
+#endif
 
 #include "Blob.h"
 
@@ -29,13 +31,17 @@ int main(void) {
 
     if (!capVideo.isOpened()) {                                                 // if unable to open video file
         std::cout << "\nerror reading video file" << std::endl << std::endl;      // show error message
+        #ifdef WINDOWS
         _getch();                    // it may be necessary to change or remove this line if not using Windows
+        #endif
         return(0);                                                              // and exit program
     }
 
     if (capVideo.get(CV_CAP_PROP_FRAME_COUNT) < 2) {
         std::cout << "\nerror: video file must have at least two frames";
+        #ifdef WINDOWS
         _getch();
+        #endif
         return(0);
     }
 
@@ -56,7 +62,7 @@ int main(void) {
 
         cv::cvtColor(imgFrame1Copy, imgFrame1Copy, CV_BGR2GRAY);
         cv::cvtColor(imgFrame2Copy, imgFrame2Copy, CV_BGR2GRAY);
-        
+
         cv::GaussianBlur(imgFrame1Copy, imgFrame1Copy, cv::Size(5, 5), 0);
         cv::GaussianBlur(imgFrame2Copy, imgFrame2Copy, cv::Size(5, 5), 0);
 
@@ -109,7 +115,7 @@ int main(void) {
         cv::Mat imgConvexHulls(imgThresh.size(), CV_8UC3, SCALAR_BLACK);
 
         convexHulls.clear();
-        
+
         for (auto &blob : blobs) {
             convexHulls.push_back(blob.contour);
         }
@@ -150,25 +156,3 @@ int main(void) {
 
     return(0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
